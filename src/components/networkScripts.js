@@ -23,3 +23,11 @@ export const getTableAttr = async (tableName) => {
   );
   return response;
 };
+
+export const getUserById = async (userId, tableName) => {
+  let resp= await fetch(`http://${BACKEND_URL}/get/tableInfo?table=${tableName}`, {
+    method: "GET",
+  })
+    
+  return resp;
+};

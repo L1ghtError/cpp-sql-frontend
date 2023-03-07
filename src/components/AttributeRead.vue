@@ -1,5 +1,13 @@
 <template>
-  <div>{{ serverAnswer }}</div>
+  <div>
+    <div
+      v-for="entityAttr in entityArr"
+      id="display-one-entity"
+      :key="entityAttr"
+    >
+      <div>{{ entityAttr != undefined ? entityAttr : "" }}</div>
+    </div>
+  </div>
 </template>
 
 <script lang="js">
@@ -15,7 +23,7 @@ export default {
 
   },
     data() {
-      return { serverAnswer: "loading" };
+      return { serverAnswer: "loading",entityArr:[] };
     },
   watch: {
     tableName: {
@@ -26,8 +34,20 @@ export default {
       },
       immediate: true,
     },
+    serverAnswer:{
+      handler(newAnswer){
+          this.entityArr = JSON.parse("["+newAnswer+"]")
+          console.log(this.entityArr)
+      }
+    }
   },
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+#display-one-entity {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+</style>

@@ -32,6 +32,12 @@
     <div v-if="operationType === 'Read' ? 1 : 0">
       <AttributeRead :table-name="selectedTable[0]"></AttributeRead>
     </div>
+    <div v-if="operationType === 'Update' ? 1 : 0">
+      <UpdateEntitis
+        :selected-table-name="selectedTable[0]"
+        :selected-table-attributes="selectedTable"
+      ></UpdateEntitis>
+    </div>
   </div>
 </template>
 
@@ -41,12 +47,14 @@ import DropDownList from "../DropDownList.vue";
 import { getConfigArr } from "../networkScripts.js";
 import SwitchToggle from "../SwitchToggle.vue";
 import AttributeRead from "../AttributeRead.vue";
+import UpdateEntitis from "../UpdateEntitis.vue";
 export default {
   components: {
     AttrInputField,
     DropDownList,
     SwitchToggle,
     AttributeRead,
+    UpdateEntitis,
   },
 
   props: {
