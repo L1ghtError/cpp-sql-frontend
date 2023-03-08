@@ -29,9 +29,19 @@ export default {
         return "";
       },
     },
+    attributeValueProp: {
+      type: String,
+      default() {
+        return "";
+      },
+    },
   },
   data() {
-    return { attributeHead: "", attributeBody: [], inputValue: "" };
+    return {
+      attributeHead: "",
+      attributeBody: [],
+      inputValue: "",
+    };
   },
   computed: {
     getAtributeBodyAsString() {
@@ -50,6 +60,12 @@ export default {
     },
   },
   watch: {
+    attributeValueProp: {
+      handler(newVal) {
+        this.inputValue = newVal;
+      },
+      immediate: true,
+    },
     attributeName: {
       handler() {
         let strArr = this.attributeName.split(/(\s+)/);

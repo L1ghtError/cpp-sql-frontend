@@ -19,7 +19,12 @@
         ></DropDownList>
       </div>
     </div>
-    <div id="optional-error-messanges">PRESS SUBMIT TO SAVE CHANGES</div>
+    <div id="optional-error-messanges">
+      {{ operationType === "Add" ? "PRESS SUBMIT TO SAVE CHANGES" : "" }}
+      {{ operationType === "Read" ? "Click to select entity" : "" }}
+      {{ operationType === "Update" ? "Update entity info" : "" }}
+      {{ operationType === "Delete" ? "Delete Entity" : "" }}
+    </div>
     <div v-if="operationType === 'Add' ? 1 : 0">
       <AttrInputField
         v-for="attribute in selectedTableAttributes"
@@ -30,13 +35,30 @@
       </AttrInputField>
     </div>
     <div v-if="operationType === 'Read' ? 1 : 0">
-      <AttributeRead :table-name="selectedTable[0]"></AttributeRead>
+      <AttributeRead
+        :table-name="selectedTable[0]"
+        :selected-table-attributes="selectedTable"
+        @entity-id-selected="(id) => handleEntityIdSelect(id)"
+      ></AttributeRead>
     </div>
     <div v-if="operationType === 'Update' ? 1 : 0">
       <UpdateEntitis
         :selected-table-name="selectedTable[0]"
-        :selected-table-attributes="selectedTable"
+        :selected-table-attributes="selectedTableAttributes"
+        :selected-id-prop="selectedEntity"
       ></UpdateEntitis>
+    </div>
+    <div v-if="operationType === 'Delete' ? 1 : 0">
+      <DeleteEntity
+        :selected-id-prop="selectedEntity"
+        :selected-table-attributes="selectedTable"
+        :selected-table-name="selectedTable[0]"
+        @entity-deleted="
+          () => {
+            selectedEntity = -1;
+          }
+        "
+      ></DeleteEntity>
     </div>
   </div>
 </template>
@@ -48,6 +70,7 @@ import { getConfigArr } from "../networkScripts.js";
 import SwitchToggle from "../SwitchToggle.vue";
 import AttributeRead from "../AttributeRead.vue";
 import UpdateEntitis from "../UpdateEntitis.vue";
+import DeleteEntity from "../DeleteEntity.vue";
 export default {
   components: {
     AttrInputField,
@@ -55,6 +78,7 @@ export default {
     SwitchToggle,
     AttributeRead,
     UpdateEntitis,
+    DeleteEntity,
   },
 
   props: {
@@ -76,6 +100,7 @@ export default {
       confAtribArr: [],
       selectedTable: [],
       operationType: "Add",
+      selectedEntity: -1,
     };
   },
   computed: {
@@ -115,6 +140,9 @@ export default {
     },
   },
   methods: {
+    handleEntityIdSelect(id) {
+      this.selectedEntity = id;
+    },
     selectAttributeByName(name) {
       //by convention 0 element is table name and other is body
 

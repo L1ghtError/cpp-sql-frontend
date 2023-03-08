@@ -1,5 +1,8 @@
 <template>
   <div id="attribControlsWrapper">
+    <button id="sendUpdateBtn" @click="handleUpdateButtonClick">
+      Send Update
+    </button>
     <input
       v-if="selectedId == -1"
       id="id-input"
@@ -10,18 +13,19 @@
       placeholder="enter entity id"
       @change="getUserByIdMethod(inputValue)"
     />
-    <div :key="attr" v-for="attr in userObject">{{ attr }}</div>
-    <!-- <AttrUpdateField
-      v-for="attr in userObject"
-      :key="attr + selectedIdProp"
-      :attributeName="selectedTableAttributes"
+    <!-- <div v-for="attr in userObject" :key="attr">{{ attr }}</div> -->
+    <AttrUpdateField
+      v-for="(attr, index) in userObject"
+      :key="attr"
+      :attributeName="selectedTableAttributes[index]"
+      :attribute-value-prop="attr"
       @atrib-update-chaned="(who, what) => handleProcesUpdateChanged(who, what)"
-    ></AttrUpdateField> -->
+    ></AttrUpdateField>
   </div>
 </template>
 
 <script>
-import { getUserById } from "./networkScripts";
+import { getUserById, updateUserEntity } from "./networkScripts";
 import AttrUpdateField from "./AttrUpdateField.vue";
 export default {
   components: {
@@ -59,6 +63,7 @@ export default {
       tableName: "",
       userObject: [],
       selectedId: Number,
+      respUserObject: [],
     };
   },
   computed: {
@@ -73,8 +78,21 @@ export default {
       },
       immediate: true,
     },
+    selectedId: {
+      handler(newVal) {
+        if (newVal != -1) {
+          this.getUserByIdMethod(newVal);
+        }
+      },
+      immediate: true,
+    },
   },
   methods: {
+    handleUpdateButtonClick() {
+      let prepearedResponse = [this.selectedTableName, ...this.respUserObject];
+      console.log(prepearedResponse);
+      updateUserEntity(JSON.stringify(prepearedResponse));
+    },
     getUserByIdMethod(id) {
       this.selectedId = id;
       let returnValue;
@@ -86,24 +104,43 @@ export default {
           let idIndex = -1;
           this.selectedTableAttributes.forEach((element, i) => {
             if (element.slice(0, 2) == "id") {
-              idIndex = i - 1;
+              idIndex = i;
             }
           });
-
           returnValue.forEach((element) => {
             if (element[idIndex] == id) {
-              console.log(element);
-              this.userObject = element
+              this.userObject = element;
+              this.userObject.forEach((el, indx) => {
+                this.respUserObject[indx] = {
+                  who: this.selectedTableAttributes[indx],
+                  what: el.toString(),
+                };
+              });
+              // this.respUserObject = JSON.parse(JSON.stringify(this.userObject));
             }
           });
         });
     },
-    handleProcesUpdateChanged(who, what) {},
+    handleProcesUpdateChanged(who, what) {
+      this.selectedTableAttributes.forEach((e, i) => {
+        if (e == who) {
+          if (typeof what === "number") {
+            console.log(what)
+            what = String(what);
+          }
+          this.respUserObject[i] = { who, what };
+        }
+      });
+    },
   },
 };
 </script>
 
 <style scoped>
+#sendUpdateBtn {
+  margin-bottom: 25px;
+}
+
 #attribControlsWrapper {
   display: flex;
   flex-direction: column;

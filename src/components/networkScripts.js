@@ -25,9 +25,32 @@ export const getTableAttr = async (tableName) => {
 };
 
 export const getUserById = async (userId, tableName) => {
-  let resp= await fetch(`http://${BACKEND_URL}/get/tableInfo?table=${tableName}`, {
-    method: "GET",
-  })
-    
+  let resp = await fetch(
+    `http://${BACKEND_URL}/get/tableInfo?table=${tableName}`,
+    {
+      method: "GET",
+    }
+  );
+
+  return resp;
+};
+
+export const deleteUserById = async (id, tableName) => {
+  let resp = await fetch(
+    `http://${BACKEND_URL}/deleteEntity?table=${tableName}&entityId=${id}`,
+    {
+      method: "POST",
+    }
+  );
+
+  return resp;
+};
+
+export const updateUserEntity = async (body) => {
+  let resp = await fetch(`http://${BACKEND_URL}/updateEntity`, {
+    method: "POST",
+    body: body,
+  });
+
   return resp;
 };
